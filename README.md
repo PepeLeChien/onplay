@@ -1,5 +1,46 @@
-# Vue 3 + Vite
+# OnPlay 🎬
 
-This template should help get you started developing with Vue 3 in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+Proyecto de catálogo de películas y series desarrollado con **Vue 3**.
 
-Learn more about IDE Support for Vue in the [Vue Docs Scaling up Guide](https://vuejs.org/guide/scaling-up/tooling.html#ide-support).
+---
+
+## 📋 Requisitos
+
+Antes de ejecutar el proyecto asegúrate de tener instalado:
+
+- [Node.js](https://nodejs.org/) v16 o superior  
+- [Visual Studio Code](https://code.visualstudio.com/) como editor de código recomendado  
+- Navegador web moderno (Chrome, Firefox, Edge, etc.)
+
+---
+
+## 🚀 Pasos para ejecutar el proyecto
+
+1. Clonar este repositorio:
+
+   git clone https://github.com/PepeLeChien/onplay.git
+
+
+2. Acceder a la carpeta del proyecto:
+
+    cd onplay
+
+
+3. Instalar las dependencias necesarias:
+
+    npm install
+
+
+4. Iniciar el servidor de desarrollo:
+
+    npm run dev
+
+---
+
+## 📦 Librerías principales
+
+Vue 3
+ – Framework principal para la construcción de la interfaz.
+
+Vue Router
+ – Manejo de rutas y navegación dentro de la aplicación.
