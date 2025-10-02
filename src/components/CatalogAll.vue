@@ -2,6 +2,7 @@
     import { ref, onMounted } from "vue";
 
     const peliculas = ref([]);
+    const title = ref("Avengers");
 
     onMounted(async () => {
     try {
@@ -13,11 +14,15 @@
     });
 
 
+    const handleTitle = (name) => {
+        title.value = name;
+    }
+
 </script>
 
 <template>
     <section class="catalog-content" :style="{ backgroundImage: `url(${background})` }">
-            <h1 class="title">THE STAR IS BORN</h1>
+            <h1 class="title">{{ title }}</h1>
             <div class="meta">
                 <span class="badge">C18</span>
                 <span>2018</span>
@@ -34,7 +39,9 @@
             <section class="carousel">
                 <h2>Recientes</h2>
                 <div class="carousel-items">
-                    <div v-for="(pelicula, index) in peliculas" :key="index" class="card">
+                    <div v-for="(pelicula, index) in peliculas" :key="index" class="card"
+                        @click="handleTitle(pelicula.nombre)"
+                    >
                         <img :src="pelicula.src" alt="">
                         <p>{{ pelicula.nombre }}</p>
                     </div>
