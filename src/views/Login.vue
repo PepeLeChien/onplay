@@ -8,19 +8,35 @@
             <section class="form_div">
                 <h1>Bienvenido</h1>
                 <div class="navigation">
-                    <p>ENTRAR</p>
-                    <p>REGISTRATE</p>
+                    <p :class="{ active: isLogin }" @click="isLogin = true">ENTRAR</p>
+                    <p :class="{ active: !isLogin }" @click="isLogin = false">REGISTRATE</p>
                 </div>
-                <div class="input_div">
-                    <input type="text">
-                    <img src="" alt="">
+                
+                <div v-if="isLogin" class="form_content">
+                    <div class="input_div">
+                        <input 
+                            v-model="email" 
+                            type="email" 
+                            placeholder="Email"
+                            @keyup.enter="handleLogin"
+                        >
+                    </div>
+                    <div class="input_div">
+                        <input 
+                            v-model="password" 
+                            type="password" 
+                            placeholder="Contraseña"
+                            @keyup.enter="handleLogin"
+                        >
+                    </div>
+                    <p class="forgot-password">Olvidaste tu contraseña?</p>
+                    <button @click="handleLogin">ENTRAR</button>
+                    <p v-if="error" class="error-message">{{ error }}</p>
                 </div>
-                <div class="input_div">
-                    <input type="password">
-                    <img src="" alt="">
+
+                <div v-else class="form_content">
+                    <p>Formulario de registro aquí</p>
                 </div>
-                <p>Olvidaste tu contraseña?</p>
-                <button>ENTRAR</button>
             </section>
             <section class="img_div">
                 <img src="https://www.infobae.com/new-resizer/Zq227nOmsISA9xjcCSjq91KEJws=/arc-anglerfish-arc2-prod-infobae/public/QYUVGM2RSNFDTFAEEEC6CLB66Y.jpg" alt="">
@@ -31,7 +47,52 @@
 </template>
 
 <script setup>
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 
+const router = useRouter()
+const email = ref('')
+const password = ref('')
+const error = ref('')
+const isLogin = ref(true)
+
+const handleLogin = async () => {
+    error.value = ''
+    
+    if (!email.value || !password.value) {
+        error.value = 'Por favor completa todos los campos'
+        return
+    }
+
+    try {
+        const response = await fetch('http://127.0.0.1:3000/auth/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                email: email.value,
+                password: password.value
+            })
+        })
+
+        const data = await response.json()
+
+        if (response.ok) {
+            // Guardar token si lo proporciona el servidor
+            if (data.token) {
+                localStorage.setItem('authToken', data.token)
+            }
+            // Redirigir al home
+            router.push('/home')
+        } else {
+            error.value = data.message || 'Error en la autenticación'
+        }
+    } catch (err) {
+        error.value = 'Error de conexión. Intenta nuevamente.'
+        console.error('Login error:', err)
+    }
+}
 </script>
 
 <style scoped>
@@ -58,7 +119,6 @@
         display: flex;
     }
 
-
     h1 {
         font-size: 64px;
         color: white;
@@ -73,10 +133,17 @@
         margin-bottom: 16px;
     }
 
-    .navigation p{
+    .navigation p {
         font-size: 24px;
         color: white;
         font-family: Arial, Helvetica, sans-serif;
+        cursor: pointer;
+        transition: color 0.3s;
+    }
+
+    .navigation p.active {
+        color: rgba(34, 142, 229, 1);
+        border-bottom: 2px solid rgba(34, 142, 229, 1);
     }
 
     .input_div {
@@ -92,12 +159,21 @@
         border-radius: 10px;
         padding: 5px 10px;
         color: white;
+        font-family: Arial, Helvetica, sans-serif;
     }
 
+    .input_div input::placeholder {
+        color: rgba(255, 255, 255, 0.7);
+    }
 
     section p {
         font-size: 16px;
         color: white;
+    }
+
+    .forgot-password {
+        cursor: pointer;
+        text-decoration: underline;
     }
 
     section button {
@@ -108,6 +184,25 @@
         border-radius: 10px;
         border: none;
         cursor: pointer;
+        font-weight: bold;
+        transition: background-color 0.3s;
+    }
+
+    section button:hover {
+        background-color: rgba(34, 142, 229, 0.8);
+    }
+
+    .error-message {
+        color: #EF2125;
+        font-size: 14px;
+        margin-top: 10px;
+    }
+
+    .form_content {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        align-items: center;
     }
 
     .img_div {
@@ -117,7 +212,7 @@
         align-items: center;
     }
 
-    .img_div img{
+    .img_div img {
         width: 600px;
         padding-top: 40px;
     }
@@ -130,5 +225,4 @@
         padding-top: 20px;
         gap: 20px;
     }
-
 </style>
