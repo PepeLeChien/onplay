@@ -8,11 +8,14 @@
             <section class="form_div">
                 <h1>Bienvenido</h1>
                 <div class="navigation">
-                    <p :class="{ active: isLogin }" @click="isLogin = true">ENTRAR</p>
-                    <p :class="{ active: !isLogin }" @click="isLogin = false">REGISTRATE</p>
+                    <p :class="{ active: section === 'login' }" @click="section = 'login'">ENTRAR</p>
+                    <p :class="{ active: section === 'register' }" @click="section = 'register'">REGISTRATE</p>
+                    <p :class="{ active: section === 'producer' }" @click="section = 'producer'">REGISTRAR PRODUCTOR</p>
                 </div>
                 
-                <div v-if="isLogin" class="form_content">
+                                <!-- LOGIN -->
+                <div v-if="section === 'login'" class="form_content login_form">
+
                     <div class="input_div">
                         <input 
                             v-model="email" 
@@ -21,6 +24,7 @@
                             @keyup.enter="handleLogin"
                         >
                     </div>
+
                     <div class="input_div">
                         <input 
                             v-model="password" 
@@ -29,13 +33,89 @@
                             @keyup.enter="handleLogin"
                         >
                     </div>
+
                     <p class="forgot-password">Olvidaste tu contraseña?</p>
                     <button @click="handleLogin">ENTRAR</button>
                     <p v-if="error" class="error-message">{{ error }}</p>
+
                 </div>
 
-                <div v-else class="form_content">
-                    <p>Formulario de registro aquí</p>
+                <!-- REGISTRO NORMAL (CLIENTE) -->
+                <div v-if="section === 'register'" class="form_content login_form">
+
+                    <div class="input_div">
+                        <input v-model="register.full_name" type="text" placeholder="Nombre completo">
+                    </div>
+
+                    <div class="input_div">
+                        <input v-model="register.email" type="email" placeholder="Email">
+                    </div>
+
+                    <div class="input_div">
+                        <input v-model="register.password" type="password" placeholder="Contraseña">
+                    </div>
+
+                    <div class="input_div">
+                        <input v-model="register.phone_number" type="text" placeholder="Número telefónico">
+                    </div>
+
+                    <div class="input_div">
+                        <input v-model="register.country" type="text" placeholder="País">
+                    </div>
+
+                    <div class="input_div">
+                        <input v-model="register.preferred_language" type="text" placeholder="Idioma preferido">
+                    </div>
+
+                    <button @click="handleRegisterCliente">REGISTRAR</button>
+                </div>
+
+                <!-- REGISTRO COMO PRODUCTOR -->
+                <div v-if="section === 'producer'" class="form_content">
+
+                    <div class="input_div">
+                        <input v-model="producer.full_name" type="text" placeholder="Nombre completo">
+                    </div>
+
+                    <div class="input_div">
+                        <input v-model="producer.email" type="email" placeholder="Email">
+                    </div>
+
+                    <div class="input_div">
+                        <input v-model="producer.password" type="password" placeholder="Contraseña">
+                    </div>
+
+                    <div class="input_div">
+                        <input v-model="producer.phone_number" type="text" placeholder="Número telefónico">
+                    </div>
+
+                    <div class="input_div">
+                        <input v-model="producer.country" type="text" placeholder="País">
+                    </div>
+
+                    <div class="input_div">
+                        <input v-model="producer.preferred_language" type="text" placeholder="Idioma preferido">
+                    </div>
+
+                    <p style="color: white; font-size: 20px; margin-top: 20px;">Datos de la productora</p>
+
+                    <div class="input_div">
+                        <input v-model="producer.institution_name" type="text" placeholder="Nombre de la institución">
+                    </div>
+
+                    <div class="input_div">
+                        <input v-model="producer.description" type="text" placeholder="Descripción">
+                    </div>
+
+                    <div class="input_div">
+                        <input v-model="producer.contact_email" type="email" placeholder="Email de contacto">
+                    </div>
+
+                    <div class="input_div">
+                        <input v-model="producer.contact_phone" type="text" placeholder="Teléfono de contacto">
+                    </div>
+
+                    <button @click="handleRegisterProducer">REGISTRAR COMO PRODUCTOR</button>
                 </div>
             </section>
             <section class="img_div">
@@ -47,18 +127,21 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
 
-const router = useRouter()
-const email = ref('')
-const password = ref('')
-const error = ref('')
-const isLogin = ref(true)
+    import { ref } from 'vue'
+    import { useRouter } from 'vue-router'
 
-const handleLogin = async () => {
+    const router = useRouter()
+
+    // ========= LOGIN ==========
+    const email = ref('')
+    const password = ref('')
+    const error = ref('')
+    const section = ref('login') // login | register | producer
+
+    const handleLogin = async () => {
     error.value = ''
-    
+
     if (!email.value || !password.value) {
         error.value = 'Por favor completa todos los campos'
         return
@@ -66,33 +149,133 @@ const handleLogin = async () => {
 
     try {
         const response = await fetch('http://127.0.0.1:3000/auth/login', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                email: email.value,
-                password: password.value
-            })
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            email: email.value,
+            password: password.value
+        })
         })
 
         const data = await response.json()
 
         if (response.ok) {
-            // Guardar token si lo proporciona el servidor
-            if (data.token) {
-                localStorage.setItem('authToken', data.token)
-            }
-            // Redirigir al home
-            router.push('/home')
-        } else {
-            error.value = data.message || 'Error en la autenticación'
+        if (data.token) {
+            localStorage.setItem('authToken', data.token)
         }
+        router.push('/home')
+        } else {
+        error.value = data.message || 'Error en la autenticación'
+        }
+
     } catch (err) {
         error.value = 'Error de conexión. Intenta nuevamente.'
-        console.error('Login error:', err)
     }
-}
+    }
+
+
+
+    // ========= REGISTRO NORMAL (CLIENTE) ==========
+    const register = ref({
+    email: "",
+    password: "",
+    full_name: "",
+    phone_number: "",
+    country: "",
+    preferred_language: "",
+    role: "USER"
+    })
+
+    const handleRegisterCliente = async () => {
+    error.value = ""
+
+    // Validación básica
+    if (!register.value.email || !register.value.password || !register.value.full_name) {
+        error.value = "Por favor completa todos los campos obligatorios"
+        return
+    }
+
+    try {
+        const response = await fetch("http://127.0.0.1:3000/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(register.value)
+        })
+
+        const data = await response.json()
+
+        if (response.ok) {
+        alert("Registro exitoso ✅")
+        section.value = "login" // volver al login
+        } else {
+        error.value = data.message || "Error al registrar"
+        }
+
+    } catch (err) {
+        error.value = "Error de conexión"
+    }
+    }
+
+
+
+    // ========= REGISTRO COMO PRODUCTOR ==========
+    const producer = ref({
+    email: "",
+    password: "",
+    full_name: "",
+    phone_number: "",
+    country: "",
+    preferred_language: "",
+    role: "PRODUCER",
+
+    // Campos ProducerRequest
+    institution_name: "",
+    description: "",
+    contact_email: "",
+    contact_phone: ""
+    })
+
+    const handleRegisterProducer = async () => {
+    error.value = ""
+
+    // Construimos el JSON EXACTO que tu API necesita
+    const payload = {
+        email: producer.value.email,
+        password_hash: producer.value.password,
+        full_name: producer.value.full_name,
+        phone_number: producer.value.phone_number,
+        country: producer.value.country,
+        preferred_language: producer.value.preferred_language,
+        role: "PRODUCER",
+        producerRequest: {
+        institution_name: producer.value.institution_name,
+        description: producer.value.description,
+        contact_email: producer.value.contact_email,
+        contact_phone: producer.value.contact_phone
+        }
+    }
+
+    try {
+        const response = await fetch("http://127.0.0.1:3000/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+        })
+
+        const data = await response.json()
+
+        if (response.ok) {
+        alert("Productor registrado ✅")
+        section.value = "login"
+        } else {
+        error.value = data.message || "Error en el registro"
+        }
+
+    } catch (err) {
+        error.value = "Error de conexión"
+    }
+    }
+
 </script>
 
 <style scoped>
@@ -126,19 +309,21 @@ const handleLogin = async () => {
     }
 
     .navigation {
-        width: 300px;
+        width: 500px;
         display: flex;
         flex-direction: row;
         justify-content: space-between;
         margin-bottom: 16px;
+        margin-left: 30px;
     }
 
     .navigation p {
-        font-size: 24px;
+        font-size: 18px;
         color: white;
         font-family: Arial, Helvetica, sans-serif;
         cursor: pointer;
         transition: color 0.3s;
+        margin-right: 10px;
     }
 
     .navigation p.active {
@@ -203,6 +388,8 @@ const handleLogin = async () => {
         flex-direction: column;
         gap: 20px;
         align-items: center;
+        height: 300px;
+        overflow-y: scroll;
     }
 
     .img_div {
@@ -215,6 +402,7 @@ const handleLogin = async () => {
     .img_div img {
         width: 600px;
         padding-top: 40px;
+        height: 400px;
     }
 
     .form_div {
@@ -224,5 +412,9 @@ const handleLogin = async () => {
         width: 40%;
         padding-top: 20px;
         gap: 20px;
+    }
+
+    .login_form{
+        overflow-y: hidden;
     }
 </style>
