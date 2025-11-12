@@ -12,10 +12,6 @@
       Resultados encontrados: {{ filteredVideos.length }}
     </p>
 
-    <div v-if="errorMessage" class="error-message">
-      <p>{{ errorMessage }}</p>
-    </div>
-
     <div v-if="filteredVideos.length" class="video-grid">
       <div
         v-for="(video, index) in filteredVideos"
@@ -42,20 +38,20 @@ import defaultImage from '../assets/images.jpeg'
 
 const query = ref('')
 const videos = ref([])
-const errorMessage = ref('')
 const mainStore = useMainStore()
 
-const fetchFromBackend = async (token) => {
+const fetchFromBackend = async () => {
   try {
+    const token = mainStore.token
+    if (!token) throw new Error('Token no disponible')
+
     const res = await fetch('http://127.0.0.1:3000/videos/getVideos', {
       headers: {
         Authorization: `Bearer ${token}`
       }
     })
 
-    if (!res.ok) {
-      throw new Error('Token inválido o backend no disponible. Usando datos locales.')
-    }
+    if (!res.ok) throw new Error('Error al conectar con el backend')
 
     const result = await res.json()
     if (result.success && Array.isArray(result.data)) {
@@ -69,7 +65,7 @@ const fetchFromBackend = async (token) => {
       throw new Error('Respuesta inesperada del backend')
     }
   } catch (error) {
-    console.error(error.message)
+    console.warn('Fallo backend:', error.message)
     await fetchFromLocal()
   }
 }
@@ -84,21 +80,11 @@ const fetchFromLocal = async () => {
     }))
     console.log('Usando datos locales desde peliculas.json')
   } catch (error) {
-    console.error('No se pudo cargar datos locales.')
-    errorMessage.value = 'No se pudo cargar datos locales.'
+    console.error('Error al cargar datos locales:', error)
   }
 }
 
-onMounted(async () => {
-  const token = mainStore.token
-  if (!token) {
-    console.warn('No hay token disponible. Usando datos locales.')
-    await fetchFromLocal()
-    return
-  }
-
-  await fetchFromBackend(token)
-})
+onMounted(fetchFromBackend)
 
 const filteredVideos = computed(() => {
   const q = query.value.toLowerCase()
@@ -128,21 +114,13 @@ const filteredVideos = computed(() => {
   font-weight: bold;
   color: #333;
 }
-.error-message {
-  background-color: #ffe0e0;
-  color: #a00;
-  padding: 1rem;
-  border-radius: 6px;
-  margin-bottom: 1rem;
-  text-align: center;
-}
 .video-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
   gap: 1.5rem;
 }
 .video-card {
-  background-color: #421d1d;
+  background-color: #843434;
   border: 1px solid #ddd;
   border-radius: 8px;
   overflow: hidden;
