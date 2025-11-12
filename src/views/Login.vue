@@ -122,7 +122,6 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useMainStore } from '../stores/main'
-const { setToken } = useMainStore()
 
 const router = useRouter()
 
@@ -131,6 +130,8 @@ const email = ref('')
 const password = ref('')
 const error = ref('')
 const section = ref('login') // login | register | producer
+const mainStore = useMainStore()
+const API_URL = import.meta.env.VITE_API_URL
 
 const handleLogin = async () => {
     error.value = ''
@@ -141,7 +142,7 @@ const handleLogin = async () => {
     }
 
     try {
-        const response = await fetch('http://127.0.0.1:3000/auth/login', {
+        const response = await fetch( `${API_URL}/Prod/auth/login`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -151,19 +152,22 @@ const handleLogin = async () => {
         })
 
         const data = await response.json()
+        mainStore.token = data.data.accessToken
         console.log(data)
+        console.log(mainStore.token);
+        
 
-        if (response.ok) {
-            if (data.data) {
-                const authToken = data.data.accessToken;
-                setToken(authToken);
-                localStorage.setItem('accessToken', authToken)
-            }
-            router.push('/home')
-        } else {
-            error.value = data.message || 'Error en la autenticación'
-        }
-
+        // if (response.ok) {
+        //     if (data.data) {
+        //         const authToken = data.data.accessToken;
+        //         setToken(authToken);
+        //         localStorage.setItem('accessToken', authToken)
+        //     }
+        //     router.push('/home')
+        // } else {
+        //     error.value = data.message || 'Error en la autenticación'
+        // }
+        router.push('/home')
     } catch (err) {
         error.value = 'Error de conexión. Intenta nuevamente.'
     }

@@ -7,7 +7,8 @@ const userDetails = ref(null)
 const loading = ref(true)
 const error = ref(null)
 const selectedMenu = ref('Ayuda')
-const { logout: logOut } = useMainStore();
+const mainStore = useMainStore();
+const API_URL = import.meta.env.VITE_API_URL
 
 const menuOptions = [
     'Ayuda',
@@ -25,9 +26,7 @@ const fetchUserDetails = async () => {
     error.value = null
 
     try {
-        console.log(localStorage)
-        const token = localStorage.getItem('accessToken')
-        console.log('Token: ' + token)
+        const token = mainStore.token
 
         if (!token) {
             error.value = 'No se encontró el token de autenticación'
@@ -35,7 +34,7 @@ const fetchUserDetails = async () => {
             return
         }
 
-        const response = await fetch('http://127.0.0.1:3000/userDetails', {
+        const response = await fetch(`${API_URL}/userDetails`, {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`,

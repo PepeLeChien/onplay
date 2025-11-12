@@ -38,16 +38,16 @@ const router = useRouter()
 const query = ref('')
 const videos = ref([])
 const mainStore = useMainStore()
+const API_URL = import.meta.env.VITE_API_URL
 
 const fetchFromBackend = async () => {
   try {
     const token = mainStore.token
-    const accessToken = localStorage.getItem('accessToken')
-    if (!accessToken) throw new Error('Token no disponible')
+    if (!token) throw new Error('Token no disponible')
 
-    const res = await fetch('http://127.0.0.1:3000/videos/getVideos', {
+    const res = await fetch(`${API_URL}/videos/getVideos`, {
       headers: {
-        Authorization: `Bearer ${accessToken}`
+        Authorization: `Bearer ${token}`
       }
     })
 

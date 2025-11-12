@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { useMainStore } from '../stores/main'
 
 const route = useRoute()
 const router = useRouter()
@@ -16,6 +17,8 @@ const currentTime = ref(0)
 const duration = ref(0)
 const volume = ref(1)
 const isFullscreen = ref(false)
+const mainStore = useMainStore()
+const API_URL = import.meta.env.VITE_API_URL 
 
 // Obtener el path del video desde los parámetros de ruta o query
 onMounted(async () => {
@@ -47,14 +50,14 @@ const fetchVideoUrl = async (path) => {
     error.value = null
 
     try {
-        const accessToken = localStorage.getItem('accessToken')
+        const accessToken = mainStore.token
 
         if (!accessToken) {
             throw new Error('No se encontró el token de autenticación')
         }
 
         console.log('Fetching video URL for path:', path)
-        const response = await fetch(`http://127.0.0.1:3000/videos/getVideoUrl?path=${path}`, {
+        const response = await fetch(`${API_URL}/videos/getVideoUrl?path=${path}`, {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${accessToken}`,
