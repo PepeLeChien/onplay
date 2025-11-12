@@ -1,22 +1,18 @@
 <template>
   <div class="search-page">
     <h1>Buscar Películas</h1>
-    <input
-      v-model="query"
-      type="text"
-      placeholder="Buscar por título..."
-      class="search-input"
-    />
+    <input v-model="query" type="text" placeholder="Buscar por título..." class="search-input" />
 
     <p v-if="filteredVideos.length" class="result-count">
       Resultados encontrados: {{ filteredVideos.length }}
     </p>
 
     <div v-if="filteredVideos.length" class="video-grid">
-      <div
-        v-for="(video, index) in filteredVideos"
-        :key="index"
+      <div 
+        v-for="(video, index) in filteredVideos" 
+        :key="index" 
         class="video-card"
+        @click="navigateToVideo(video)"
       >
         <img :src="video.src || defaultImage" alt="Miniatura" />
         <div class="video-info">
@@ -33,8 +29,11 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { useMainStore } from '../stores/main'
 import defaultImage from '../assets/images.jpeg'
+
+const router = useRouter()
 
 const query = ref('')
 const videos = ref([])
@@ -55,7 +54,7 @@ const fetchFromBackend = async () => {
     if (!res.ok) throw new Error('Error al conectar con el backend')
 
     const mockVideos = await fetchFromLocal()
-    console.log('Mocks: ',mockVideos)
+    console.log('Mocks: ', mockVideos)
     const result = await res.json()
 
     if (result.success && Array.isArray(result.data)) {
@@ -105,6 +104,24 @@ const filteredVideos = computed(() => {
     video.nombre.toLowerCase().includes(q)
   )
 })
+
+const navigateToVideo = (video) => {
+  // Si el video tiene una URL, navegar al reproductor
+  if (video.url) {
+    const encodedPath = encodeURIComponent(video.url)
+    const encodedTitle = encodeURIComponent(video.nombre)
+    router.push({
+      name: 'video',
+      query: {
+        path: encodedPath,
+        title: encodedTitle
+      }
+    })
+  } else {
+    console.warn('El video no tiene URL disponible')
+  }
+}
+
 </script>
 
 <style scoped>
@@ -113,6 +130,7 @@ const filteredVideos = computed(() => {
   max-width: 1000px;
   margin: auto;
 }
+
 .search-input {
   width: 100%;
   padding: 0.75rem 1rem;
@@ -120,42 +138,50 @@ const filteredVideos = computed(() => {
   font-size: 1rem;
   border: 2px solid #007bff;
   border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
+
 .result-count {
   margin-bottom: 1rem;
   font-weight: bold;
   color: #333;
 }
+
 .video-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
   gap: 1.5rem;
 }
+
 .video-card {
   background-color: #993232;
   border: 1px solid #ddd;
   border-radius: 8px;
   overflow: hidden;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
   transition: transform 0.2s ease;
 }
+
 .video-card:hover {
   transform: scale(1.03);
 }
+
 .video-card img {
   width: 100%;
   height: 240px;
   object-fit: cover;
 }
+
 .video-info {
   padding: 0.75rem;
   text-align: center;
 }
+
 .video-info h3 {
   font-size: 1rem;
   margin: 0;
 }
+
 .no-results {
   margin-top: 2rem;
   font-style: italic;

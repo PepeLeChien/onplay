@@ -10,6 +10,7 @@ import CatalogAll from "../components/CatalogAll.vue";
 import Pagos from "../components/Pagos.vue";
 import Account from "../components/Account.vue";
 import Search from "../components/Search.vue";
+import VideoPlayer from "../components/VideoPlayer.vue";
 
 const router = createRouter({
     history: createWebHistory(),
@@ -74,6 +75,12 @@ const router = createRouter({
                     path: 'account',
                     name: 'account',
                     component: Account
+                },
+                {
+                    path: 'video/:path?',
+                    name: 'video',
+                    component: VideoPlayer,
+                    props: true
                 }
             ],
         }
