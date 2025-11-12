@@ -1,11 +1,13 @@
 <script setup>
 import { ref, onMounted } from 'vue'
+import { useMainStore } from '../stores/main'
 
 
 const userDetails = ref(null)
 const loading = ref(true)
 const error = ref(null)
 const selectedMenu = ref('Ayuda')
+const { logout: logOut } = useMainStore();
 
 const menuOptions = [
     'Ayuda',
@@ -41,8 +43,6 @@ const fetchUserDetails = async () => {
             }
         })
 
-        console.log('RESPONSE: ', response);
-
         if (!response.ok) {
             throw new Error('Error al obtener los datos del usuario')
         }
@@ -68,7 +68,7 @@ const selectMenu = (menu) => {
 }
 
 const logout = () => {
-    localStorage.clear()
+    logOut();
     window.location.href = '/login'
 }
 

@@ -18,7 +18,7 @@ export const useMainStore = defineStore('main', {
     logout() {
       this.usuario = null
       this.token = ''
-      localStorage.removeItem('authToken')
+      localStorage.clear()
     }
   }
 })
