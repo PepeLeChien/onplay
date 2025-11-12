@@ -120,7 +120,7 @@ const filteredVideos = computed(() => {
   gap: 1.5rem;
 }
 .video-card {
-  background-color: #843434;
+  background-color: #993232;
   border: 1px solid #ddd;
   border-radius: 8px;
   overflow: hidden;
