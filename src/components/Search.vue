@@ -43,30 +43,42 @@ const mainStore = useMainStore()
 const fetchFromBackend = async () => {
   try {
     const token = mainStore.token
-    if (!token) throw new Error('Token no disponible')
+    const accessToken = localStorage.getItem('accessToken')
+    if (!accessToken) throw new Error('Token no disponible')
 
     const res = await fetch('http://127.0.0.1:3000/videos/getVideos', {
       headers: {
-        Authorization: `Bearer ${token}`
+        Authorization: `Bearer ${accessToken}`
       }
     })
 
     if (!res.ok) throw new Error('Error al conectar con el backend')
 
+    const mockVideos = await fetchFromLocal()
+    console.log('Mocks: ',mockVideos)
     const result = await res.json()
+
     if (result.success && Array.isArray(result.data)) {
-      videos.value = result.data.map(video => ({
+      const backendVideos = result.data.map(video => ({
         nombre: video.title || 'Sin título',
         descripcion: video.description || '',
         url: video.url || null,
         src: null
       }))
+
+      videos.value = [
+        ...backendVideos,
+        ...mockVideos
+      ]
+
+      console.log('Videos combinados:', videos.value)
     } else {
       throw new Error('Respuesta inesperada del backend')
     }
   } catch (error) {
     console.warn('Fallo backend:', error.message)
-    await fetchFromLocal()
+    const mockVideos = await fetchFromLocal()
+    videos.value = mockVideos;
   }
 }
 
@@ -74,11 +86,12 @@ const fetchFromLocal = async () => {
   try {
     const res = await fetch('/data/peliculas.json')
     const data = await res.json()
-    videos.value = data.map(p => ({
+    const mockVideos = data.map(p => ({
       nombre: p.nombre,
       src: p.src || null
     }))
     console.log('Usando datos locales desde peliculas.json')
+    return mockVideos;
   } catch (error) {
     console.error('Error al cargar datos locales:', error)
   }
