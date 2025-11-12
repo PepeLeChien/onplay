@@ -148,7 +148,7 @@
     }
 
     try {
-        const response = await fetch('http://127.0.0.1:3000/auth/login', {
+        const response = await fetch('https://8mbqgjlv81.execute-api.us-west-2.amazonaws.com/Prod/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -158,10 +158,12 @@
         })
 
         const data = await response.json()
+        console.log(data)
 
         if (response.ok) {
         if (data.token) {
-            localStorage.setItem('authToken', data.token)
+            const authToken = data.data.accessToken;
+            localStorage.setItem('accessToken', authToken)
         }
         router.push('/home')
         } else {
