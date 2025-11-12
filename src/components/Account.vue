@@ -67,7 +67,7 @@ const selectMenu = (menu) => {
 }
 
 const logout = () => {
-    logOut();
+    mainStore.logout();
     window.location.href = '/login'
 }
 
