@@ -45,7 +45,7 @@ const fetchFromBackend = async () => {
     const token = mainStore.token
     if (!token) throw new Error('Token no disponible')
 
-    const res = await fetch(`${API_URL}/videos/getVideos`, {
+    const res = await fetch(`http://127.0.0.1:3000/videos/getVideos`, {
       headers: {
         Authorization: `Bearer ${token}`
       }

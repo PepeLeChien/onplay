@@ -1,0 +1,27 @@
+# Configuración para Mercado Pago y cookies de terceros
+<IfModule mod_headers.c>
+    # Permitir cookies de terceros para Mercado Pago
+    Header set SameSite "None"
+    Header set Secure
+    
+    # CORS Headers
+    Header set Access-Control-Allow-Origin "*"
+    Header set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
+    Header set Access-Control-Allow-Headers "Content-Type, Authorization"
+    
+    # Permitir acceso al almacenamiento desde iframes
+    Header set Permissions-Policy "payment=*, geolocation=*, microphone=*, camera=*"
+</IfModule>
+
+# Rewrite rules para SPA (Single Page Application)
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /
+    
+    # No rewrite archivos o directorios existentes
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    
+    # Rewrite a index.html
+    RewriteRule ^ index.html [QSA,L]
+</IfModule>

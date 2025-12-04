@@ -142,7 +142,7 @@ const handleLogin = async () => {
     }
 
     try {
-        const response = await fetch( `${API_URL}/Prod/auth/login`, {
+        const response = await fetch(`http://127.0.0.1:3000/auth/login`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -153,6 +153,7 @@ const handleLogin = async () => {
 
         const data = await response.json()
         mainStore.token = data.data.accessToken
+        localStorage.setItem('accessToken', data.data.accessToken)
         console.log(data)
         console.log(mainStore.token);
         
@@ -178,7 +179,7 @@ const handleLogin = async () => {
 // ========= REGISTRO NORMAL (CLIENTE) ==========
 const register = ref({
     email: "",
-    password: "",
+    password_hash: "",
     full_name: "",
     phone_number: "",
     country: "",
@@ -190,18 +191,20 @@ const handleRegisterCliente = async () => {
     error.value = ""
 
     // Validación básica
-    if (!register.value.email || !register.value.password || !register.value.full_name) {
+    if (!register.value.email || !register.value.password_hash || !register.value.full_name) {
         error.value = "Por favor completa todos los campos obligatorios"
         return
     }
-
+    
+    console.log("Datos de registro cliente:", register.value)
     try {
-        const response = await fetch("http://127.0.0.1:3000/auth/register", {
+        const response = await fetch("http://127.0.0.1:3000/auth/registe", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(register.value)
         })
 
+        console.log("Payload de registro cliente:", register.value)
         const data = await response.json()
 
         if (response.ok) {
@@ -254,6 +257,8 @@ const handleRegisterProducer = async () => {
             contact_phone: producer.value.contact_phone
         }
     }
+
+    console.log("Payload de registro productor:", payload)
 
     try {
         const response = await fetch("http://127.0.0.1:3000/auth/register", {

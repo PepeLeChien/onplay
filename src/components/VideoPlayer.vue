@@ -57,7 +57,7 @@ const fetchVideoUrl = async (path) => {
         }
 
         console.log('Fetching video URL for path:', path)
-        const response = await fetch(`${API_URL}/videos/getVideoUrl?path=${path}`, {
+        const response = await fetch(`http://127.0.0.1:3000/videos/getVideoUrl?path=${path}`, {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${accessToken}`,
