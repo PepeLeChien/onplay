@@ -2,6 +2,7 @@
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useMainStore } from '../stores/main'
+import { VIDEO_ENDPOINTS, VIDEOS_BASE_URL } from '../constants/urlConstants'
 
 const router = useRouter()
 
@@ -118,7 +119,7 @@ const uploadVideo = async () => {
         }
 
         // Primero, obtener la URL presignada para subir el video
-        const getUploadUrlResponse = await fetch('https://j2ddh84hp9.execute-api.us-west-2.amazonaws.com/Prod/videos/generatePresignedUrl', {
+        const getUploadUrlResponse = await fetch(VIDEO_ENDPOINTS.GENERATE_PRESIGNED_URL, {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -157,7 +158,7 @@ const uploadVideo = async () => {
         // Registrar el video en la base de datos
         const videoPath = uploadData.data?.path || uploadData.path || videoFile.value.name
 
-        const registerResponse = await fetch('http://127.0.0.1:3000/videos/saveVideo', {
+        const registerResponse = await fetch(VIDEO_ENDPOINTS.SAVE_VIDEO, {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${token}`,

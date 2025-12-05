@@ -2,6 +2,8 @@
 import { ref, onMounted, onUnmounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useMainStore } from '../stores/main'
+import { VIDEO_ENDPOINTS } from '../constants/urlConstants'
+import { apiPost } from '../services/apiService'
 
 const route = useRoute()
 const router = useRouter()
@@ -50,14 +52,14 @@ const fetchVideoUrl = async (path) => {
     error.value = null
 
     try {
-        const accessToken = mainStore.token
+        const accessToken = localStorage.getItem('accessToken')
 
         if (!accessToken) {
             throw new Error('No se encontró el token de autenticación')
         }
 
         console.log('Fetching video URL for path:', path)
-        const response = await fetch(`http://127.0.0.1:3000/videos/getVideoUrl?path=${path}`, {
+        const response = await fetch(VIDEO_ENDPOINTS.GET_VIDEO_URL(path), {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${accessToken}`,
@@ -65,23 +67,21 @@ const fetchVideoUrl = async (path) => {
             }
         })
 
-        console.log('Response status:', response.status)
+        
+        const responseData = await response.json()
+        
+        console.log('✓ URL de video obtenida:', responseData.presignedUrl)
 
-        if (response.status != 200) {
-            throw new Error('Error al obtener la URL del video')
-        }
-
-        const { data } = await response.json()
-
-        if (data.presignedUrl) {
-
-            videoUrl.value = data.presignedUrl
+        if (responseData.data && responseData.data.presignedUrl) {
+            videoUrl.value = responseData.data.presignedUrl
+        } else if (responseData.data && responseData.data.presignedUrl) {
+            videoUrl.value = responseData.data.presignedUrl
         } else {
-            throw new Error('No se recibió una URL válida del video')
+            throw new Error('No se recibió URL de video')
         }
     } catch (err) {
         error.value = err instanceof Error ? err.message : 'Error de conexión'
-        console.error('Error fetching video URL:', err)
+        console.error('❌ Error fetching video URL:', err)
     } finally {
         loading.value = false
     }

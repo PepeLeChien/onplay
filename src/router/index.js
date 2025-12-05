@@ -8,7 +8,6 @@ import CatalogoPelis from "../components/CatalogoPelis.vue";
 import CatalogoShows from "../components/CatalogoShows.vue";
 import CatalogAll from "../components/CatalogAll.vue";
 import Pagos from "../components/Pagos.vue";
-import Account from "../components/Account.vue";
 import Search from "../components/Search.vue";
 import VideoPlayer from "../components/VideoPlayer.vue";
 import UploadVideo from "../components/UploadVideo.vue";
@@ -76,11 +75,11 @@ const router = createRouter({
                    name: 'pagos',
                    component: Pagos 
                 },
-                {
+                /* {
                     path: 'account',
                     name: 'account',
                     component: Account
-                },
+                }, */
                 {
                     path: 'video/:path?',
                     name: 'video',

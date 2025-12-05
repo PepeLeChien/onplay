@@ -122,6 +122,8 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useMainStore } from '../stores/main'
+import { AUTH_ENDPOINTS } from '../constants/urlConstants'
+import { apiPost } from '../services/apiService'
 
 const router = useRouter()
 
@@ -131,7 +133,6 @@ const password = ref('')
 const error = ref('')
 const section = ref('login') // login | register | producer
 const mainStore = useMainStore()
-const API_URL = import.meta.env.VITE_API_URL
 
 const handleLogin = async () => {
     error.value = ''
@@ -142,35 +143,18 @@ const handleLogin = async () => {
     }
 
     try {
-        const response = await fetch(`http://127.0.0.1:3000/auth/login`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                email: email.value,
-                password: password.value
-            })
+        const data = await apiPost(AUTH_ENDPOINTS.LOGIN, {
+            email: email.value,
+            password: password.value
         })
 
-        const data = await response.json()
         mainStore.token = data.data.accessToken
         localStorage.setItem('accessToken', data.data.accessToken)
-        console.log(data)
-        console.log(mainStore.token);
-        
-
-        // if (response.ok) {
-        //     if (data.data) {
-        //         const authToken = data.data.accessToken;
-        //         setToken(authToken);
-        //         localStorage.setItem('accessToken', authToken)
-        //     }
-        //     router.push('/home')
-        // } else {
-        //     error.value = data.message || 'Error en la autenticación'
-        // }
+        console.log('✓ Login exitoso:', data)
         router.push('/home')
     } catch (err) {
-        error.value = 'Error de conexión. Intenta nuevamente.'
+        error.value = err.message || 'Error de conexión. Intenta nuevamente.'
+        console.error('❌ Error en login:', err)
     }
 }
 
@@ -196,26 +180,16 @@ const handleRegisterCliente = async () => {
         return
     }
     
-    console.log("Datos de registro cliente:", register.value)
+    console.log("📝 Datos de registro cliente:", register.value)
     try {
-        const response = await fetch("http://127.0.0.1:3000/auth/registe", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(register.value)
-        })
+        const data = await apiPost(AUTH_ENDPOINTS.REGISTER, register.value)
 
-        console.log("Payload de registro cliente:", register.value)
-        const data = await response.json()
-
-        if (response.ok) {
-            alert("Registro exitoso ✅")
-            section.value = "login" // volver al login
-        } else {
-            error.value = data.message || "Error al registrar"
-        }
-
+        console.log("✓ Registro cliente exitoso:", data)
+        alert("Registro exitoso ✅")
+        section.value = "login" // volver al login
     } catch (err) {
-        error.value = "Error de conexión"
+        error.value = err.message || "Error al registrar"
+        console.error('❌ Error en registro:', err)
     }
 }
 
@@ -258,26 +232,17 @@ const handleRegisterProducer = async () => {
         }
     }
 
-    console.log("Payload de registro productor:", payload)
+    console.log("📝 Payload de registro productor:", payload)
 
     try {
-        const response = await fetch("http://127.0.0.1:3000/auth/register", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload)
-        })
+        const data = await apiPost(AUTH_ENDPOINTS.REGISTER, payload)
 
-        const data = await response.json()
-
-        if (response.ok) {
-            alert("Productor registrado ✅")
-            section.value = "login"
-        } else {
-            error.value = data.message || "Error en el registro"
-        }
-
+        console.log("✓ Productor registrado:", data)
+        alert("Productor registrado ✅")
+        section.value = "login"
     } catch (err) {
-        error.value = "Error de conexión"
+        error.value = err.message || "Error en el registro"
+        console.error('❌ Error en registro productor:', err)
     }
 }
 

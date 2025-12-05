@@ -32,6 +32,7 @@ import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useMainStore } from '../stores/main'
 import defaultImage from '../assets/images.jpeg'
+import { VIDEO_ENDPOINTS } from '../constants/urlConstants'
 
 const router = useRouter()
 
@@ -42,10 +43,10 @@ const API_URL = import.meta.env.VITE_API_URL
 
 const fetchFromBackend = async () => {
   try {
-    const token = mainStore.token
+    const token = localStorage.getItem('accessToken')
     if (!token) throw new Error('Token no disponible')
 
-    const res = await fetch(`http://127.0.0.1:3000/videos/getVideos`, {
+    const res = await fetch(VIDEO_ENDPOINTS.GET_ALL, {
       headers: {
         Authorization: `Bearer ${token}`
       }
