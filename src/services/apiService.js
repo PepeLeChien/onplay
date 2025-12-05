@@ -100,10 +100,29 @@ export const apiDelete = async (url) => {
   return response.json()
 }
 
+/**
+ * POST request para crear un pago de suscripción
+ * @param {string} url - URL del endpoint de pago
+ * @param {object} paymentData - Datos del pago (planId, etc.)
+ * @returns {Promise<object>} - Retorna objeto con initPoint o sandboxInitPoint
+ */
+export const apiPayment = async (url, paymentData) => {
+  const response = await apiRequest(url, {
+    method: 'POST',
+    body: JSON.stringify(paymentData)
+  })
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({}))
+    throw new Error(error.message || `Error ${response.status}`)
+  }
+  return response.json()
+}
+
 export default {
   apiRequest,
   apiGet,
   apiPost,
   apiPut,
-  apiDelete
+  apiDelete,
+  apiPayment
 }

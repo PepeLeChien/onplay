@@ -1,18 +1,17 @@
 export const USER_BASE_URL = 'https://6srb7av9o8.execute-api.us-west-2.amazonaws.com/Prod';
-export const AUTH_BASE_URL = 'https://8mbqgjlv81.execute-api.us-west-2.amazonaws.com/Prod';
+export const AUTH_BASE_URL = 'https://8mbqgjlv81.execute-api.us-west-2.amazonaws.com/Prod/auth';
 export const SUBSCRIPTION_BASE_URL = 'https://cwcsbr8ypf.execute-api.us-west-2.amazonaws.com/Prod';
 export const VIDEOS_BASE_URL = 'https://j2ddh84hp9.execute-api.us-west-2.amazonaws.com/Prod/videos';
-export const PLAN_BASE_URL = 'https://pb29uw617i.execute-api.us-west-2.amazonaws.com/Prod';
+export const PLAN_BASE_URL = 'https://pb29uw617i.execute-api.us-west-2.amazonaws.com/Prod/plan';
 export const PAYMENT_BASE_URL = 'https://qvr8omd0lb.execute-api.us-west-2.amazonaws.com/Prod';
 
 export const AUTH_ENDPOINTS = {
-    LOGIN: `${AUTH_BASE_URL}/auth/login`,
-    REGISTER: `${AUTH_BASE_URL}/auth/register`,
+    LOGIN: `${AUTH_BASE_URL}/login`,
+    REGISTER: `${AUTH_BASE_URL}/register`,
 };
 
 export const USER_ENDPOINTS = {
-    GET_PROFILE: `${USER_BASE_URL}/user/profile`,
-    UPDATE_PROFILE: `${USER_BASE_URL}/user/update`,
+    GET_PROFILE: `${USER_BASE_URL}/userDetails`,
 };
 
 export const VIDEO_ENDPOINTS = {
@@ -24,7 +23,7 @@ export const VIDEO_ENDPOINTS = {
 };
 
 export const PLAN_ENDPOINTS = {
-    GET_ALL: `${PLAN_BASE_URL}/plan/get-all`,
+    GET_ALL: `${PLAN_BASE_URL}/get-all`,
 };
 
 export const SUBSCRIPTION_ENDPOINTS = {
@@ -32,7 +31,7 @@ export const SUBSCRIPTION_ENDPOINTS = {
 };
 
 export const PAYMENT_ENDPOINTS = {
-    PAY_SUBSCRIPTION: `${PAYMENT_BASE_URL}/payment/pay-subscription`,
+    PAY_SUBSCRIPTION: `${PAYMENT_BASE_URL}/pay-subscription`,
 };
 
 // Endpoints que NO requieren token

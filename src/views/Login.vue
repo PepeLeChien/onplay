@@ -143,10 +143,18 @@ const handleLogin = async () => {
     }
 
     try {
-        const data = await apiPost(AUTH_ENDPOINTS.LOGIN, {
-            email: email.value,
-            password: password.value
+        const response = await fetch(AUTH_ENDPOINTS.LOGIN, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                email: email.value,
+                password: password.value
+            })
         })
+
+        const data = await response.json()
 
         mainStore.token = data.data.accessToken
         localStorage.setItem('accessToken', data.data.accessToken)
@@ -179,10 +187,18 @@ const handleRegisterCliente = async () => {
         error.value = "Por favor completa todos los campos obligatorios"
         return
     }
-    
+
     console.log("📝 Datos de registro cliente:", register.value)
     try {
-        const data = await apiPost(AUTH_ENDPOINTS.REGISTER, register.value)
+        const data = await fetch(AUTH_ENDPOINTS.REGISTER,
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(register.value)
+            }
+        )
 
         console.log("✓ Registro cliente exitoso:", data)
         alert("Registro exitoso ✅")

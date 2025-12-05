@@ -11,6 +11,7 @@ import Pagos from "../components/Pagos.vue";
 import Search from "../components/Search.vue";
 import VideoPlayer from "../components/VideoPlayer.vue";
 import UploadVideo from "../components/UploadVideo.vue";
+import Account from "../components/Account.vue";
 
 const router = createRouter({
     history: createWebHistory(),
@@ -75,11 +76,11 @@ const router = createRouter({
                    name: 'pagos',
                    component: Pagos 
                 },
-                /* {
+                {
                     path: 'account',
                     name: 'account',
                     component: Account
-                }, */
+                },
                 {
                     path: 'video/:path?',
                     name: 'video',

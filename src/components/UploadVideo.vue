@@ -158,6 +158,8 @@ const uploadVideo = async () => {
         // Registrar el video en la base de datos
         const videoPath = uploadData.data?.path || uploadData.path || videoFile.value.name
 
+        console.log('Video subido a:', videoPath)
+        console.log(`Registrando video en la base de datos... ${videoTitle.value}, ${videoDescription.value}`)
         const registerResponse = await fetch(VIDEO_ENDPOINTS.SAVE_VIDEO, {
             method: 'POST',
             headers: {
@@ -172,6 +174,8 @@ const uploadVideo = async () => {
                 category: 'General'
             })
         })
+
+        console.log('Respuesta de registro de video:', await registerResponse.json())
 
         if (!registerResponse.ok) {
             const errorData = await registerResponse.json()
